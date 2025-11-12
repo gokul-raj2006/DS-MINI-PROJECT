@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📚 Library Management System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #1e1e2f 0%, #2a2a3e 100%);
+            color: white;
+            min-height: 100vh;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            animation: fadeIn 1s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .title {
+            text-align: center;
+            font-size: 2.5em;
+            margin-bottom: 30px;
+            animation: colorChange 2s infinite alternate;
+        }
+
+        @keyframes colorChange {
+            0% { color: #00FFAA; }
+            25% { color: #00D4FF; }
+            50% { color: #FFD700; }
+            75% { color: #FF66CC; }
+            100% { color: #00FF88; }
+        }
+
+        .input-section {
+            background: #29293d;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border: 3px solid #3a3a4d;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .input-group {
+            display: grid;
+            grid-template-columns: 1fr 2fr 1.5fr 1fr;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        input {
+            padding: 12px;
+            font-size: 16px;
+            border: 2px solid #3a3a4d;
+            border-radius: 5px;
+            background: #1e1e2f;
+            color: white;
+            transition: all 0.3s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #00FFAA;
+            box-shadow: 0 0 10px rgba(0, 255, 170, 0.3);
+        }
+
+        input::placeholder {
+            color: #888;
+        }
+
+        .search-box {
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        button {
+            padding: 12px 25px;
+            font-size: 16px;
+            font-weight: bold;
+            border: none;
+            border-radius: 8px;
+            background: #33334d;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        button:hover {
+            background: #00FFAA;
+            color: black;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0, 255, 170, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .table-container {
+            background: #29293d;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: #1e1e2f;
+        }
+
+        th {
+            padding: 15px;
+            text-align: left;
+            font-size: 18px;
+            color: #00FFAA;
+            border-bottom: 2px solid #3a3a4d;
+        }
+
+        td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #3a3a4d;
+        }
+
+        tr {
+            transition: all 0.3s;
+        }
+
+        tr:hover {
+            background: #3a3a4d;
+        }
+
+        .highlight-current {
+            background: #FFD700 !important;
+            animation: pulse 0.3s;
+        }
+
+        .highlight-compare {
+            background: #FF6666 !important;
+            animation: pulse 0.3s;
+        }
+
+        .highlight-swap {
+            background: #00FF88 !important;
+            animation: pulse 0.4s;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+
+        .message-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 30px 50px;
+            border-radius: 15px;
+            font-size: 24px;
+            font-weight: bold;
+            z-index: 1000;
+            animation: popupFadeIn 0.5s, popupFadeOut 0.5s 2s;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        @keyframes popupFadeIn {
+            from { opacity: 0; transform: translate(-50%, -60%); }
+            to { opacity: 1; transform: translate(-50%, -50%); }
+        }
+
+        @keyframes popupFadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
+
+        .success { background: #00FFAA; color: black; }
+        .error { background: #FF6666; color: white; }
+        .warning { background: #FFD700; color: black; }
+
+        @media (max-width: 768px) {
+            .input-group {
+                grid-template-columns: 1fr;
+            }
+            
+            .title {
+                font-size: 1.8em;
+            }
+            
+            .button-group {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="title">📚 Library Management System</h1>
+        
+        <div class="input-section">
+            <div class="input-group">
+                <input type="number" id="bookId" placeholder="Book ID">
+                <input type="text" id="bookTitle" placeholder="Book Title">
+                <input type="text" id="bookAuthor" placeholder="Author">
+                <input type="text" id="bookYear" placeholder="Year">
+            </div>
+        </div>
+
+        <input type="text" id="searchBox" class="search-box" placeholder="🔍 Search by ID or Title...">
+
+        <div class="button-group">
+            <button onclick="addBook()">➕ Add Book</button>
+            <button onclick="searchBooks()">🔍 Search</button>
+            <button onclick="sortBooks('id')">🔢 Sort by ID</button>
+            <button onclick="sortBooks('title')">📖 Sort by Title</button>
+            <button onclick="resetTable()">🔄 Reset</button>
+        </div>
+
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Title</th>
+                        <th>Author</th>
+                        <th>Year</th>
+                    </tr>
+                </thead>
+                <tbody id="bookTable">
+                    <!-- Books will be populated here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        let books = [];
+        let isSorting = false;
+
+        function showMessage(text, type = 'success') {
+            const popup = document.createElement('div');
+            popup.className = `message-popup ${type}`;
+            popup.textContent = text;
+            document.body.appendChild(popup);
+            
+            setTimeout(() => {
+                popup.remove();
+            }, 2500);
+        }
+
+        function addBook() {
+            const id = parseInt(document.getElementById('bookId').value);
+            const title = document.getElementById('bookTitle').value;
+            const author = document.getElementById('bookAuthor').value;
+            const year = document.getElementById('bookYear').value;
+
+            if (isNaN(id)) {
+                showMessage('❌ Book ID must be a number!', 'error');
+                return;
+            }
+
+            if (!title || !author || !year) {
+                showMessage('⚠ Please fill all fields!', 'warning');
+                return;
+            }
+
+            books.push({ id, title, author, year });
+            refreshTable();
+            showMessage('✅ Book Added!', 'success');
+
+            // Clear inputs
+            document.getElementById('bookId').value = '';
+            document.getElementById('bookTitle').value = '';
+            document.getElementById('bookAuthor').value = '';
+            document.getElementById('bookYear').value = '';
+        }
+
+        function refreshTable() {
+            const tbody = document.getElementById('bookTable');
+            tbody.innerHTML = '';
+            
+            books.forEach(book => {
+                const row = tbody.insertRow();
+                row.insertCell(0).textContent = book.id;
+                row.insertCell(1).textContent = book.title;
+                row.insertCell(2).textContent = book.author;
+                row.insertCell(3).textContent = book.year;
+            });
+        }
+
+        function searchBooks() {
+            const query = document.getElementById('searchBox').value.toLowerCase();
+            const tbody = document.getElementById('bookTable');
+            tbody.innerHTML = '';
+            
+            const filtered = books.filter(book => 
+                book.id.toString().includes(query) || 
+                book.title.toLowerCase().includes(query)
+            );
+
+            filtered.forEach(book => {
+                const row = tbody.insertRow();
+                row.insertCell(0).textContent = book.id;
+                row.insertCell(1).textContent = book.title;
+                row.insertCell(2).textContent = book.author;
+                row.insertCell(3).textContent = book.year;
+            });
+
+            if (filtered.length === 0) {
+                showMessage('No books found!', 'warning');
+            }
+        }
+
+        function resetTable() {
+            document.getElementById('searchBox').value = '';
+            refreshTable();
+        }
+
+        async function sortBooks(key) {
+            if (isSorting) {
+                showMessage('⚠ Sorting in progress...', 'warning');
+                return;
+            }
+
+            if (books.length === 0) {
+                showMessage('⚠ No books to sort!', 'warning');
+                return;
+            }
+
+            isSorting = true;
+            await selectionSortVisual(key);
+            isSorting = false;
+        }
+
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        function highlightRow(index, className) {
+            const rows = document.getElementById('bookTable').rows;
+            if (rows[index]) {
+                rows[index].className = className;
+            }
+        }
+
+        function resetHighlight(index) {
+            const rows = document.getElementById('bookTable').rows;
+            if (rows[index]) {
+                rows[index].className = '';
+            }
+        }
+
+        async function selectionSortVisual(key) {
+            const n = books.length;
+            
+            for (let i = 0; i < n - 1; i++) {
+                let minIndex = i;
+                highlightRow(i, 'highlight-current');
+                
+                for (let j = i + 1; j < n; j++) {
+                    highlightRow(j, 'highlight-compare');
+                    await sleep(300);
+                    
+                    const comparison = key === 'id' 
+                        ? books[j][key] < books[minIndex][key]
+                        : books[j][key].toLowerCase() < books[minIndex][key].toLowerCase();
+                    
+                    if (comparison) {
+                        minIndex = j;
+                    }
+                    resetHighlight(j);
+                }
+                
+                // Swap
+                [books[i], books[minIndex]] = [books[minIndex], books[i]];
+                highlightRow(i, 'highlight-swap');
+                refreshTable();
+                await sleep(400);
+                resetHighlight(i);
+            }
+            
+            refreshTable();
+            showMessage(`✅ Books sorted by ${key.toUpperCase()}!`, 'success');
+        }
+
+        // Add some sample books for demonstration
+        books = [
+            { id: 103, title: "The Great Gatsby", author: "F. Scott Fitzgerald", year: "1925" },
+            { id: 101, title: "To Kill a Mockingbird", author: "Harper Lee", year: "1960" },
+            { id: 105, title: "1984", author: "George Orwell", year: "1949" },
+            { id: 102, title: "Pride and Prejudice", author: "Jane Austen", year: "1813" },
+            { id: 104, title: "The Catcher in the Rye", author: "J.D. Salinger", year: "1951" }
+        ];
+
+        refreshTable();
+    </script>
+</body>
+</html>
